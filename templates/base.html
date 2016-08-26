@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BLOG BLOG BLOG</title>
+    <style type="text/css">
+        body {
+            margin: 0 auto;
+            width: 200px;
+        }
+        form {
+            margin: 10px;
+        }
+        input[type=text] {
+            width: 200px;
+        }
+        textarea {
+            width: 200px;
+            height: 100px;
+        }
+        nav span {
+            margin: 5px;
+        }
+        .post {
+            width: 200px;
+            margin: 10px;
+        }
+        .post-submitted {
+            text-align: right;
+            font-size: 8px;
+        }
+        .error {
+            color: red;
+        }
+        hr {
+            width: 200px;
+        }
+
+
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <span><a href="/">BLOG HOME</a></span>
+    <span><a href="/newpost">NEW POST</a></span>
+</nav>
+
+{% block content %}
+{% endblock %}
+
+
+</body>
+</html>
