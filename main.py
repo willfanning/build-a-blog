@@ -12,7 +12,7 @@ jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
 class Post(db.Model):
     title = db.StringProperty(required=True)
     post = db.TextProperty(required=True)
-    created = db.DateTimeProperty(auto_now_add=True)
+    submitted = db.DateTimeProperty(auto_now_add=True)
 
 
 class Handler(webapp2.RequestHandler):
@@ -28,31 +28,42 @@ class Handler(webapp2.RequestHandler):
 
 
 class Main(Handler):
+    def get(self):
+        self.redirect('/blog')
+
+class Blog(Handler):
 
     def get(self):
-        posts = db.GqlQuery('SELECT * FROM Post '
-                            'ORDER BY created DESC')
+        posts = db.GqlQuery('SELECT * FROM Post ORDER BY submitted DESC LIMIT 5')
         self.render('blog.html', posts=posts)
-
-    def post(self):
-        title = self.request.get('title')
-        post = self.request.get('post')
-
-        if title and post:
-            p = Post(title=title, post=post)
-            p.put()
-            self.redirect('/')
-        else:
-            error = 'Both title and post required'
-            self.render('newpost.html', title=title, post=post, error=error)
 
 
 class NewPost(Handler):
     def get(self):
         self.render('newpost.html')
 
+    def post(self):
+        title = self.request.get('title')
+        post = self.request.get('post')
+
+        if title and post:
+            p = Post(title=title, post=post).put()
+            id = str(p.id())
+            self.redirect('/blog/' + id)
+        else:
+            error = 'Both title and post required'
+            self.render('newpost.html', title=title, post=post, error=error)
+
+
+class ViewPost(Handler):
+    def get(self, post_id):
+        post = Post.get_by_id(ids=int(post_id))
+        self.render('blog.html', posts=[post])
+
 
 app = webapp2.WSGIApplication([
     ('/', Main),
-    ('/newpost', NewPost)
+    ('/blog', Blog),
+    ('/newpost', NewPost),
+    webapp2.Route('/blog/<post_id:\d+>', ViewPost)
 ], debug=True)

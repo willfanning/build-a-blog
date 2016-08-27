@@ -4,11 +4,14 @@
 
 {% for post in posts: %}
     <div class="post">
-        <div class="post-title">{{ post.title }}</div>
+        <div class="post-title"><a href="/blog/{{ post.key().id() }}">{{ post.title }}</a></div>
         <pre class="post-body">{{ post.post }}</pre>
+
+        <div class="post-submitted">{{ post.submitted }}</div>
+        <hr>
     </div>
-    <div class="post-submitted">{{ post.created }}</div>
-    <hr>
+
+
 {% endfor %}
 
 {% endblock %}
