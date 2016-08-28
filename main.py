@@ -1,8 +1,8 @@
 import os
 import webapp2
 import jinja2
-import random
 
+from random import choice
 from google.appengine.ext import db
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -11,13 +11,16 @@ jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
 
 
 def get_posts(limit, offset):
-    return db.GqlQuery('SELECT * FROM Post ORDER BY submitted DESC LIMIT ' + str(limit) + ' OFFSET ' + str(offset))
+    return db.GqlQuery('SELECT * FROM Post ORDER BY submitted DESC '
+                       'LIMIT ' + str(limit) +
+                       ' OFFSET ' + str(offset))
+
 
 def get_random_post():
     posts = list(db.GqlQuery('SELECT * FROM Post'))
-    post = random.choice(posts)
+    post = choice(posts)
     post_id = post.key().id()
-    return post_id
+    return str(post_id)
 
 
 class Post(db.Model):
@@ -35,11 +38,21 @@ class Handler(webapp2.RequestHandler):
         return t.render(params)
 
     def render(self, template, **kw):
-       self.write(self.render_str(template, **kw))
+        self.write(self.render_str(template, **kw))
 
 
 class Blog(Handler):
-    def render_blog(self, page=1, limit=5, offset=0, main_page=True):
+    def get(self):
+        limit = 5
+        offset = 0
+        page = self.request.get('page')
+
+        if (not page) or (int(page) == 1):
+            page = 1
+        else:
+            offset = (limit * int(page)) - limit
+            page = int(page)
+
         posts = get_posts(limit, offset)
         num_posts = posts.count()
         post_range = num_posts - offset
@@ -54,22 +67,8 @@ class Blog(Handler):
                     offset=offset,
                     num_posts=num_posts,
                     post_range=post_range,
-                    main_page=True)
-
-    def get(self):
-        limit = 5
-        offset = 0
-        page = self.request.get('page')
-
-        if not page:
-            page = 1
-        elif int(page) == 1:
-            page = 1
-        else:
-            offset = (limit * int(page)) - limit
-            page = int(page)
-
-        self.render_blog(page, limit, offset)
+                    main_page=True
+                    )
 
 
 class NewPost(Handler):
@@ -101,8 +100,7 @@ class ViewPost(Handler):
 
 class Random(Handler):
     def get(self):
-        post_id = str(get_random_post())
-        self.redirect('/blog/' + post_id)
+        self.redirect('/blog/' + get_random_post())
 
 
 app = webapp2.WSGIApplication([
