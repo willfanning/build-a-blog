@@ -4,13 +4,18 @@
 
 {% for post in posts: %}
     <div class="post">
-        <div class="post-title"><a href="/blog/{{ post.key().id() }}">{{ post.title }}</a></div>
+
+        <div class="post-header">
+            <a class="post-title" href="/blog/{{ post.key().id() }}">{{ post.title }}</a>
+        </div>
+
         <pre class="post-body">{{ post.post }}</pre>
 
         <div class="post-submitted">{{ post.submitted }}</div>
-        <hr>
+
     </div>
 
+    <hr>
 
 {% endfor %}
 
