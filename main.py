@@ -11,9 +11,7 @@ jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
 
 
 def get_posts(limit, offset):
-    return db.GqlQuery('SELECT * FROM Post ORDER BY submitted DESC '
-                       'LIMIT ' + str(limit) +
-                       ' OFFSET ' + str(offset))
+    return db.GqlQuery('SELECT * FROM Post ORDER BY submitted DESC LIMIT {} OFFSET {}'.format(limit, offset))
 
 
 def get_random_post():
@@ -21,6 +19,11 @@ def get_random_post():
     post = choice(posts)
     post_id = post.key().id()
     return str(post_id)
+
+
+def get_post_ids():
+    posts = list(db.GqlQuery('SELECT * FROM Post'))
+    return [post.key().id() for post in posts]
 
 
 class Post(db.Model):
@@ -56,6 +59,7 @@ class Blog(Handler):
         posts = get_posts(limit, offset)
         num_posts = posts.count()
         post_range = num_posts - offset
+
         if post_range > limit:
             post_range = limit
         else:
@@ -94,8 +98,11 @@ class NewPost(Handler):
 
 class ViewPost(Handler):
     def get(self, post_id):
-        post = Post.get_by_id(ids=int(post_id))
-        self.render('blog.html', posts=[post])
+        if int(post_id) in get_post_ids():
+            post = Post.get_by_id(ids=int(post_id))
+            self.render('blog.html', posts=[post])
+        else:
+            self.redirect('/')
 
 
 class Random(Handler):

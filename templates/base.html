@@ -107,7 +107,6 @@
         #total-posts {
             font-size: 18px;
             margin: auto;
-            display: inline-block;
             position: relative;
             left: 300px;
         }
@@ -122,14 +121,14 @@
     <a class="title" href="/">BLOG BLOG BLOG</a>
 
     {% if main_page %}
-        <span id="total-posts"> TOTAL POSTS [{{ num_posts }}] </span>
+        <span id="total-posts"> TOTAL POSTS: {{ num_posts }} </span>
     {% endif %}
 </div>
 
 <div class="navbar">
 
-    <a class="navbar-item" href="/newpost"> NEW POST </a> -
-    <a class="navbar-item" href="/random"> RANDOM</a>
+    <a class="navbar-item" href="/newpost"> NEW POST </a>
+    <a class="navbar-item" href="/random"> - RANDOM</a>
 
     {% if main_page %}
     <span class="page-viewer"> VIEWING [ {{ offset + 1 }} - {{ (offset + post_range) }} ]

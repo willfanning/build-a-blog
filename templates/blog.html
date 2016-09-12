@@ -2,21 +2,17 @@
 
 {% block content %}
 
+
 {% for post in posts: %}
     <div class="post">
-
         <div class="post-header">
             <a class="post-title" href="/blog/{{ post.key().id() }}">{{ post.title }}</a>
         </div>
-
         <pre class="post-body">{{ post.post }}</pre>
-
         <div class="post-submitted">{{ post.submitted }}</div>
-
     </div>
-
     <hr>
-
 {% endfor %}
+
 
 {% endblock %}
